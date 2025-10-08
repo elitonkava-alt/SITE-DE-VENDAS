@@ -1,4 +1,8 @@
 <!doctype html>
+$('#searchInput').addEventListener('input', debounce(filterAndSearch,220));
+$('#platformFilter').addEventListener('change', filterAndSearch);
+
+
 // modal close with Escape
 document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); });
 
