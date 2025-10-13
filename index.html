@@ -1,103 +1,45 @@
-<!doctype html>
-$('#searchInput').addEventListener('input', debounce(filterAndSearch,220));
-$('#platformFilter').addEventListener('change', filterAndSearch);
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loja de Jogos — GameVerse</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="site">
+    <header>
+      <div class="brand">
+        <div class="logo">GV</div>
+        <h1>GameVerse</h1>
+      </div>
+      <div class="controls">
+        <div class="search">
+          <input type="text" id="searchInput" placeholder="Buscar jogos...">
+        </div>
+      </div>
+    </header>
 
+    <main>
+      <div class="catalog">
+        <!-- Jogos serão gerados via script.js -->
+      </div>
 
-// modal close with Escape
-document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); });
+      <aside class="sidebar">
+        <h3>Carrinho</h3>
+        <div class="cart-list"></div>
+        <div class="total">
+          <span>Total: R$ 0,00</span>
+          <button class="btn">Finalizar Compra</button>
+        </div>
+      </aside>
+    </main>
 
+    <footer>
+      © 2025 GameVerse — Todos os direitos reservados.
+    </footer>
+  </div>
 
-/* ------------- Render helpers for modals ------------- */
-function renderProductDetail(p){
-return `
-<div class="grid-2">
-<div>
-<div style="height:260px; border-radius:8px; background-image:url('${p.image}'); background-size:cover; background-position:center"></div>
-<h2 style="margin-top:12px">${p.title}</h2>
-<div class="muted">${p.platform} • ⭐ ${p.rating}</div>
-<p style="margin-top:10px">${p.description}</p>
-<div style="display:flex; gap:8px; margin-top:10px"><button class="btn" data-buy="${p.id}">Adicionar ao Carrinho</button><button class="small" onclick="closeModal()">Fechar</button></div>
-</div>
-<div>
-<div class="card" style="padding:12px">
-<div style="display:flex; justify-content:space-between; align-items:center"><div class="muted">Preço</div><div class="price">${money(p.price)}</div></div>
-<div style="margin-top:8px" class="muted">Plataforma</div>
-<div style="margin-top:6px">${p.platform}</div>
-<div style="margin-top:12px" class="muted">Tags</div>
-<div class="tags" style="margin-top:6px">${p.tags.map(t=>`<div class="tag">${t}</div>`).join('')}</div>
-</div>
-</div>
-</div>
-`;
-}
-
-
-function renderCartModal(){
-let html = '<h2>Seu Carrinho</h2>';
-if(Object.keys(cart).length===0){ html += '<div class="empty">Carrinho vazio</div>'; html += '<div style="margin-top:10px"><button class="small" onclick="closeModal()">Fechar</button></div>'; return html; }
-html += '<div style="margin-top:12px">';
-let total=0;
-for(const [id,qty] of Object.entries(cart)){
-const p = PRODUCTS.find(x=>x.id===id); if(!p) continue; total += p.price*qty;
-html += `<div style="display:flex; gap:10px; align-items:center; margin-bottom:8px"><div style="width:64px; height:44px; background-image:url('${p.image}'); background-size:cover; border-radius:8px"></div><div style="flex:1">${p.title} <div class="muted">${qty} x ${money(p.price)}</div></div><div>${money(p.price*qty)}</div></div>`;
-}
-html += `</div><div style="display:flex; justify-content:space-between; margin-top:12px"><div class="muted">Total</div><div class="price">${money(total)}</div></div>`;
-html += '<div style="margin-top:12px; display:flex; gap:8px"><button class="btn" id="proceedToCheckout">Finalizar</button><button class="small" onclick="closeModal()">Continuar comprando</button></div>';
-// attach handler after open
-setTimeout(()=>{ document.getElementById('proceedToCheckout')?.addEventListener('click', ()=>{ openModal(renderCheckout()); }); },30);
-return html;
-}
-
-
-function renderCheckout(){
-let total=0; for(const [id,qty] of Object.entries(cart)){ const p = PRODUCTS.find(x=>x.id===id); if(p) total += p.price*qty; }
-return `
-<h2>Checkout</h2>
-<div class="muted">Total: ${money(total)}</div>
-<form id="checkoutForm" style="margin-top:10px">
-<div style="display:flex; gap:8px; margin-bottom:8px"><input required name="name" placeholder="Nome completo" style="flex:1; padding:8px; border-radius:8px; border:0; background:var(--glass); color:inherit"></div>
-<div style="margin-bottom:8px"><input required name="email" placeholder="E-mail" style="width:100%; padding:8px; border-radius:8px; border:0; background:var(--glass); color:inherit"></div>
-<div style="margin-bottom:8px"><input required name="address" placeholder="Endereço (opcional para digital)" style="width:100%; padding:8px; border-radius:8px; border:0; background:var(--glass); color:inherit"></div>
-<div style="display:flex; gap:8px"><button class="btn" type="submit">Pagar (simulado)</button><button class="small" type="button" onclick="closeModal()">Cancelar</button></div>
-</form>
-`;
-}
-
-
-/* ------------- Checkout handling (simulated) ------------- */
-document.addEventListener('submit', e=>{
-if(e.target.id==='checkoutForm'){
-e.preventDefault();
-const fd = new FormData(e.target);
-// aqui você conectaria com backend / gateway — por enquanto simulamos
-const name = fd.get('name');
-const email = fd.get('email');
-// fake processing
-closeModal();
-alert(`Obrigado, ${name}! Pedido simulado enviado para ${email}. (Teste local)`);
-clearCart();
-}
-});
-
-
-/* ------------- Utilities ------------- */
-function debounce(fn,ms=200){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a),ms); } }
-
-
-/* ------------- Initial render ------------- */
-renderCatalog(PRODUCTS);
-updateCartUI();
-
-
-// small UX: clicking outside modal closes it
-document.getElementById('modalBackdrop').addEventListener('click', function(e){ if(e.target === this) closeModal(); });
-
-
-// small accessibility: focus first input on checkout modal (delegated when modal opens) - simple approach
-const observer = new MutationObserver(()=>{ if(document.querySelector('#modalBackdrop[aria-hidden="false"]')){ const input = document.querySelector('#checkoutForm input'); if(input) input.focus(); } });
-observer.observe(document.getElementById('modalContent'), {childList:true, subtree:true});
-
-
-</script>
+  <script src="script.js"></script>
 </body>
 </html>
