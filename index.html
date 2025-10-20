@@ -5,6 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Loja de Jogos — GameVerse</title>
   <link rel="stylesheet" href="styles.css">
+  <style>
+    .product-card {
+      display: inline-block;
+      width: 200px;
+      margin: 10px;
+      text-align: center;
+    }
+    .product-card img {
+      width: 100%;
+      height: auto;
+      border-radius: 10px;
+    }
+    .product-card .title {
+      font-weight: bold;
+      margin-top: 5px;
+    }
+  </style>
 </head>
 <body>
   <div class="site">
@@ -13,26 +30,12 @@
         <div class="logo">GV</div>
         <h1>GameVerse</h1>
       </div>
-      <div class="controls">
-        <div class="search">
-          <input type="text" id="searchInput" placeholder="Buscar jogos...">
-        </div>
-      </div>
     </header>
 
     <main>
       <div class="catalog">
-        <!-- Jogos serão gerados via script.js -->
+        <!-- As imagens dos jogos serão geradas aqui via script.js -->
       </div>
-
-      <aside class="sidebar">
-        <h3>Carrinho</h3>
-        <div class="cart-list"></div>
-        <div class="total">
-          <span>Total: R$ 0,00</span>
-          <button class="btn">Finalizar Compra</button>
-        </div>
-      </aside>
     </main>
 
     <footer>
@@ -40,6 +43,116 @@
     </footer>
   </div>
 
-  <script src="script.js"></script>
+  <script>
+    const PRODUCTS = [
+      {
+        id: 'cs2',
+        title: 'Counter-Strike 2',
+        price: 0,
+        platform: 'PC',
+        tags: ['FPS','Multiplayer'],
+        image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRcooanR2yM5r6AqqwhY9mp6U7t54E_phKCDA&s',
+        description: 'Nova versão do clássico jogo de tiro em equipe.'
+      },
+      {
+        id: 'dota2',
+        title: 'Dota 2',
+        price: 0,
+        platform: 'PC',
+        tags: ['MOBA','Competitivo'],
+        image: 'https://i.pcmag.com/imagery/reviews/00XEhttps://i.pcmag.com/imagery/reviews/00XEmE7YBg1AOLEzZFQxhJV-3..v1569475078.jpgmE7YBg1AOLEzZFQxhJV-3..v1569475078.jpg',
+        description: 'MOBA de grande sucesso, jogue com amigos ou solo.'
+      },
+      {
+        id: 'valheim',
+        title: 'Valheim',
+        price: 44.99,
+        platform: 'PC',
+        tags: ['Sobrevivência','Co-op'],
+        image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQFZwDSUXK4mUE3e_8dEOqTXMsaZpeyybMuYg&s',
+        description: 'Sandbox viking com exploração, construção e combate.'
+      },
+      {
+        id: 'cyberpunk2077',
+        title: 'Cyberpunk 2077',
+        price: 199.99,
+        platform: 'PC',
+        tags: ['RPG','Mundo Aberto'],
+        image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzXb_uoZYXMIFEl-0E3iKsjti4fsrDV0aVbg&s',
+        description: 'Grande RPG futurista com narrativa envolvente.'
+      },
+      {
+        id: 'eldenring',
+        title: 'Elden Ring',
+        price: 249.99,
+        platform: 'PC',
+        tags: ['Aventura','RPG'],
+        image: 'https://cdn.akamai.steamstatic.com/steam/apps/124562https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQmiZrHgsaqTRFhGwcVaHm1sBLaQ-P3jemiKg&s0/header.jpg',
+        description: 'Mundo aberto com combate desafiador e exploração profunda.'
+      },
+      {
+        id: 'baldursgate3',
+        title: 'Baldur’s Gate 3',
+        price: 249.99,
+        platform: 'PC',
+        tags: ['RPG','História'],
+        image: 'https://cdhttps://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT7hM2kZWVFV6Xi3IjbI2GIZF7EdjaBav8nbg&sn.akamai.steamstatic.com/steam/apps/1086940/header.jpg',
+        description: 'RPG baseado em D&D com escolhas e narrativa incríveis.'
+      },
+      {
+        id: 'hades2',
+        title: 'Hades II',
+        price: 129.99,
+        platform: 'PC',
+        tags: ['Ação','Roguelike'],
+        image: 'https://cdn.akamai.steamstatic.com/steam/apps/114535data:image/jpeg;base64,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.jpg',
+        description: 'Sequência do premiado roguelike mitológico da Supergiant Games.'
+      },
+      {
+        id: 'palworld',
+        title: 'Palworld',
+        price: 139.99,
+        platform: 'PC',
+        tags: ['Sobrevivência','Multiplayer'],
+        image: 'https://cdn.akamai.steamstatic.com/steam/apps',
+        description: 'Crie, lute e capture criaturas em um mundo aberto vasto.'
+      },
+      {
+        id: 'helldivers2',
+        title: 'Helldivers 2',
+        price: 199.99,
+        platform: 'PC',
+        tags: ['Tiro','Co-op'],
+        image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQM05772trypM9GfXV4jwuOdvhOnc2c8zb_Dg&s'
+        description: 'Lute em equipe para salvar a galáxia em missões intensas.'
+      },
+      {
+        id: 'hollowknigth',
+        title: 'Hollow Knigth',
+        price: 14.99,
+        platform: 'PC',
+        tags: ['Sobrevivência','PVP']
+        image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtdcVzU6WJ98bkU8prM5LOusS3QSk0cjYUvQ&s'
+        description: 'Sobreviva em um mundo hostil, construa bases e lute pela vida.'
+      }
+    ];
+
+    function renderCatalog() {
+      const catalog = document.querySelector('.catalog');
+      catalog.innerHTML = ''; // Limpar o catálogo antes de adicionar novos itens
+
+      PRODUCTS.forEach(prod => {
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.innerHTML = `
+          <img src="${prod.image}" alt="${prod.title}">
+          <div class="title">${prod.title}</div>
+        `;
+        catalog.appendChild(card);
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', renderCatalog);
+  </script>
 </body>
 </html>
