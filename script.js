@@ -1,71 +1,115 @@
-// Carrinho
-let cart = [];
+/*
+========================================================
+|            CÓDIGO JAVASCRIPT (CARRINHO)              |
+========================================================
+*/
 
-function renderCatalog() {
-  const catalog = document.querySelector('.catalog');
-  catalog.innerHTML = '';
-  PRODUCTS.forEach(prod => {
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.innerHTML = `
-      <div class="thumb" style="background-image:url('${prod.image}')"></div>
-      <div class="meta">
-        <div class="title">${prod.title}</div>
-        <div class="price">${prod.price > 0 ? 'R$ ' + prod.price.toFixed(2) : 'Grátis'}</div>
+// Lista de produtos (simulando a base de dados)
+const products = [
+  { id: 1, name: "Cyberpunk 2077", price: 199.90, image: "https://via.placeholder.com/300x200/ff5733/ffffff?text=Cyberpunk" },
+  { id: 2, name: "The Witcher 3", price: 99.99, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSb0luKkWyzTO6oBg_DBlhrjJQlYTD9Z3FoBw&s" },
+  { id: 3, name: "Elden Ring", price: 249.00, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR5Nou4oHurJxom1LW1QZvXbvtsRRzpNTD28g&s" },
+  { id: 4, name: "Stardew Valley", price: 49.90, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkeLlFQDTHsYjSHtbBsInAYl2aIF54Qz_8zQ&s" },
+  // Adicione mais produtos aqui
+];
+
+let cart = []; // Array que armazenará os itens do carrinho
+
+// Referências aos elementos do DOM
+const catalogElement = document.querySelector('.catalog');
+const cartItemsElement = document.getElementById('cart-items');
+const cartTotalElement = document.getElementById('cart-total-value');
+
+
+// Função para renderizar os produtos no catálogo
+function renderProducts() {
+  products.forEach(product => {
+    const productCard = document.createElement('div');
+    productCard.classList.add('product-card');
+    productCard.innerHTML = `
+      <img src="${product.image}" alt="Capa do jogo ${product.name}" class="product-image">
+      <div class="product-info">
+        <h3>${product.name}</h3>
+        <p class="price">R$ ${product.price.toFixed(2).replace('.', ',')}</p>
+        <button class="btn-add" data-id="${product.id}">Adicionar ao Carrinho</button>
       </div>
-      <div class="tags">${prod.tags.map(t => `<div class="tag">${t}</div>`).join('')}</div>
-      <p class="muted">${prod.description}</p>
-      <button class="btn" onclick="addToCart('${prod.id}')">Adicionar ao Carrinho</button>
     `;
-    catalog.appendChild(card);
+    catalogElement.appendChild(productCard);
+  });
+
+  // Adiciona event listeners aos botões "Adicionar ao Carrinho"
+  document.querySelectorAll('.btn-add').forEach(button => {
+    button.addEventListener('click', (e) => {
+      // Pega o ID do produto através do atributo data-id
+      const productId = parseInt(e.target.dataset.id); 
+      addToCart(productId);
+    });
   });
 }
 
-function addToCart(id) {
-  const product = PRODUCTS.find(p => p.id === id);
-  const item = cart.find(i => i.id === id);
-  if (item) {
-    item.qty++;
-  } else {
-    cart.push({...product, qty: 1});
+// Função para adicionar um produto ao carrinho
+function addToCart(productId) {
+  const product = products.find(p => p.id === productId);
+
+  if (product) {
+    const existingItem = cart.find(item => item.id === productId);
+
+    if (existingItem) {
+      existingItem.quantity += 1; // Se existe, aumenta a quantidade
+    } else {
+      cart.push({ ...product, quantity: 1 }); // Se não existe, adiciona o novo item
+    }
+
+    renderCart(); // Atualiza o visual do carrinho
   }
+}
+
+// Função para remover um item do carrinho
+function removeFromCart(productId) {
+  // Filtra o array, removendo o item com o ID correspondente
+  cart = cart.filter(item => item.id !== productId); 
   renderCart();
 }
 
-function removeFromCart(id) {
-  cart = cart.filter(i => i.id !== id);
-  renderCart();
+// Função para calcular o total do carrinho
+function calculateTotal() {
+  return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
 }
 
+// Função para renderizar os itens do carrinho e o total
 function renderCart() {
-  const list = document.querySelector('.cart-list');
-  const totalElem = document.querySelector('.total span');
-  list.innerHTML = '';
+  cartItemsElement.innerHTML = ''; // Limpa a lista atual
 
   if (cart.length === 0) {
-    list.innerHTML = '<div class="empty">Carrinho vazio</div>';
-    totalElem.textContent = 'Total: R$ 0,00';
-    return;
+    cartItemsElement.innerHTML = '<li id="empty-cart-message">O carrinho está vazio.</li>';
+  } else {
+    cart.forEach(item => {
+      const listItem = document.createElement('li');
+      listItem.classList.add('cart-item');
+      listItem.innerHTML = `
+        <span class="cart-item-name">${item.name} (${item.quantity}x)</span>
+        <span class="cart-item-price">R$ ${(item.price * item.quantity).toFixed(2).replace('.', ',')}</span>
+        <button class="cart-item-remove" data-id="${item.id}">X</button>
+      `;
+      cartItemsElement.appendChild(listItem);
+    });
+
+    // Adiciona event listeners aos botões de remover recém-criados
+    document.querySelectorAll('.cart-item-remove').forEach(button => {
+      button.addEventListener('click', (e) => {
+        const productId = parseInt(e.target.dataset.id);
+        removeFromCart(productId);
+      });
+    });
   }
 
-  let total = 0;
-  cart.forEach(item => {
-    total += item.price * item.qty;
-    const el = document.createElement('div');
-    el.className = 'cart-item';
-    el.innerHTML = `
-      <div class="cart-thumb" style="background-image:url('${item.image}')"></div>
-      <div class="cart-info">
-        <div>${item.title}</div>
-        <div class="muted">Qtd: ${item.qty}</div>
-      </div>
-      <div>R$ ${(item.price * item.qty).toFixed(2)}</div>
-      <button class="small btn" onclick="removeFromCart('${item.id}')">x</button>
-    `;
-    list.appendChild(el);
-  });
-
-  totalElem.textContent = `Total: R$ ${total.toFixed(2)}`;
+  // Atualiza o total
+  const total = calculateTotal();
+  cartTotalElement.textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
 }
 
-document.addEventListener('DOMContentLoaded', renderCatalog);
+// Inicialização da página: Renderiza os produtos e o carrinho ao carregar o DOM
+document.addEventListener('DOMContentLoaded', () => {
+  renderProducts();
+  renderCart();
+});
