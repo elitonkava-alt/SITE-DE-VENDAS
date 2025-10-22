@@ -6,13 +6,12 @@
 
 // Lista de produtos (simulando a base de dados)
 const products = [
-  { id: 1, name: "Cyberpunk 2077", price: 199.90, image: "https://via.placeholder.com/300x200/ff5733/ffffff?text=Cyberpunk" },
+  { id: 1, name: "Cyberpunk 2077", price: 199.90, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRgK020HdJlnxesOkODk-1vJc7aVnM0aBd6Eg&s" },
   { id: 2, name: "The Witcher 3", price: 99.99, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSb0luKkWyzTO6oBg_DBlhrjJQlYTD9Z3FoBw&s" },
   { id: 3, name: "Elden Ring", price: 249.00, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR5Nou4oHurJxom1LW1QZvXbvtsRRzpNTD28g&s" },
   { id: 4, name: "Stardew Valley", price: 49.90, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkeLlFQDTHsYjSHtbBsInAYl2aIF54Qz_8zQ&s" },
+  ];
   // Adicione mais produtos aqui
-];
-
 let cart = []; // Array que armazenará os itens do carrinho
 
 // Referências aos elementos do DOM
